@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherWise - Your AI Travel Companion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #1e40af;
+            --accent-color: #f59e0b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -8px var(--primary-color);
+        }
+
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: var(--shadow);
+        }
+
+        .suggestion-item {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .suggestion-item:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            background: var(--gradient-primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -8px var(--primary-color);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: transparent;
+        }
+
+        .weather-card {
+            background: var(--card-bg);
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .weather-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .current-weather {
+            text-align: center;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .current-weather::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .weather-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .temperature {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .location {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .detail-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .forecast-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .forecast-item:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-color);
+        }
+
+        .ai-assistant {
+            background: var(--gradient-secondary);
+            color: white;
+            border-radius: 2rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .ai-form {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-input {
+            padding: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .ai-response {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .recommendation {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .clothes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .clothing-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .error {
+            background: #ef4444;
+            color: white;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-container {
+                max-width: none;
+            }
+            
+            .temperature {
+                font-size: 3rem;
+            }
+            
+            .weather-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <div class="container">
+        <div class="header">
+            <h1 class="logo">🌤️ WeatherWise</h1>
+            <p class="subtitle">Your AI-powered weather companion for smart travel decisions</p>
+        </div>
+
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" id="locationInput" class="search-input" 
+                       placeholder="Enter city name (e.g., Mumbai, Delhi, Bangalore...)">
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+            <button id="getCurrentLocation" class="btn">📍 Use My Location</button>
+            <button id="themeToggle" class="theme-toggle">🌙</button>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="current">Current Weather</div>
+            <div class="tab" data-tab="hourly">Hourly</div>
+            <div class="tab" data-tab="daily">7-Day Forecast</div>
+            <div class="tab" data-tab="ai">AI Travel Assistant</div>
+        </div>
+
+        <div id="currentTab" class="tab-content">
+            <div id="currentWeather"></div>
+        </div>
+
+        <div id="hourlyTab" class="tab-content" style="display: none;">
+            <div class="weather-card">
+                <h2>24-Hour Forecast</h2>
+                <div id="hourlyForecast"></div>
+            </div>
+        </div>
+
+        <div id="dailyTab" class="tab-content" style="display: none;">
+            <div class="weather-card">
+                <h2>7-Day Forecast</h2>
+                <div id="dailyForecast"></div>
+            </div>
+        </div>
+
+        <div id="aiTab" class="tab-content" style="display: none;">
+            <div class="ai-assistant">
+                <h2>🤖 AI Travel Assistant</h2>
+                <p>Get personalized travel recommendations based on weather forecasts</p>
+                
+                <div class="ai-form">
+                    <div class="form-group">
+                        <label>Destination</label>
+                        <input type="text" id="aiDestination" class="form-input" 
+                               placeholder="Enter destination city">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            <input type="date" id="startDate" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>End Date</label>
+                            <input type="date" id="endDate" class="form-input">
+                        </div>
+                    </div>
+                    
+                    <button id="getRecommendation" class="btn">Get Travel Recommendation</button>
+                </div>
+                
+                <div id="aiResponse" class="ai-response"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = 'your_api_key_here';
+        const BASE_URL = 'https://api.openweathermap.org/data/2.5';
+        
+        // Indian cities for suggestions
+        const indianCities = [
+            'Mumbai, IN', 'Delhi, IN', 'Bangalore, IN', 'Chennai, IN', 'Kolkata, IN',
+            'Hyderabad, IN', 'Pune, IN', 'Ahmedabad, IN', 'Surat, IN', 'Jaipur, IN',
+            'Lucknow, IN', 'Kanpur, IN', 'Nagpur, IN', 'Indore, IN', 'Thane, IN',
+            'Bhopal, IN', 'Visakhapatnam, IN', 'Pimpri-Chinchwad, IN', 'Patna, IN',
+            'Vadodara, IN', 'Ghaziabad, IN', 'Ludhiana, IN', 'Agra, IN', 'Nashik, IN',
+            'Faridabad, IN', 'Meerut, IN', 'Rajkot, IN', 'Kalyan-Dombivli, IN',
+            'Vasai-Virar, IN', 'Varanasi, IN', 'Srinagar, IN', 'Aurangabad, IN',
+            'Dhanbad, IN', 'Amritsar, IN', 'Navi Mumbai, IN', 'Allahabad, IN',
+            'Ranchi, IN', 'Howrah, IN', 'Coimbatore, IN', 'Jabalpur, IN',
+            'Gwalior, IN', 'Vijayawada, IN', 'Jodhpur, IN', 'Madurai, IN',
+            'Raipur, IN', 'Kota, IN', 'Chandigarh, IN', 'Guwahati, IN',
+            'Solapur, IN', 'Hubli–Dharwad, IN', 'Tiruchirappalli, IN', 'Bareilly, IN',
+            'Mysore, IN', 'Tiruppur, IN', 'Gurgaon, IN', 'Aligarh, IN',
+            'Jalandhar, IN', 'Bhubaneswar, IN', 'Salem, IN', 'Warangal, IN',
+            'Guntur, IN', 'Bhiwandi, IN', 'Saharanpur, IN', 'Gorakhpur, IN',
+            'Bikaner, IN', 'Amravati, IN', 'Noida, IN', 'Jamshedpur, IN',
+            'Bhilai, IN', 'Cuttack, IN', 'Firozabad, IN', 'Kochi, IN',
+            'Nellore, IN', 'Bhavnagar, IN', 'Dehradun, IN', 'Durgapur, IN',
+            'Asansol, IN', 'Rourkela, IN', 'Nanded, IN', 'Kolhapur, IN',
+            'Ajmer, IN', 'Akola, IN', 'Gulbarga, IN', 'Jamnagar, IN',
+            'Ujjain, IN', 'Loni, IN', 'Siliguri, IN', 'Jhansi, IN',
+            'Ulhasnagar, IN', 'Jammu, IN', 'Sangli-Miraj & Kupwad, IN', 'Mangalore, IN',
+            'Erode, IN', 'Belgaum, IN', 'Ambattur, IN', 'Tirunelveli, IN',
+            'Malegaon, IN', 'Gaya, IN', 'Jalgaon, IN', 'Udaipur, IN',
+            'Maheshtala, IN', 'Davanagere, IN', 'Kozhikode, IN', 'Kurnool, IN'
+        ];
+
+        let currentWeatherData = null;
+
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+                
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab + 'Tab').style.display = 'block';
+            });
+        });
+
+        // Location input suggestions
+        const locationInput = document.getElementById('locationInput');
+        const suggestions = document.getElementById('suggestions');
+
+        locationInput.addEventListener('input', (e) => {
+            const value = e.target.value.toLowerCase();
+            if (value.length < 2) {
+                suggestions.style.display = 'none';
+                return;
+            }
+
+            const matches = indianCities.filter(city => 
+                city.toLowerCase().includes(value)
+            ).slice(0, 5);
+
+            if (matches.length > 0) {
+                suggestions.innerHTML = matches.map(city => 
+                    `<div class="suggestion-item" onclick="selectCity('${city}')">${city}</div>`
+                ).join('');
+                suggestions.style.display = 'block';
+            } else {
+                suggestions.style.display = 'none';
+            }
+        });
+
+        function selectCity(city) {
+            locationInput.value = city;
+            suggestions.style.display = 'none';
+            getWeatherByCity(city);
+        }
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                suggestions.style.display = 'none';
+            }
+        });
+
+        // Get current location
+        document.getElementById('getCurrentLocation').addEventListener('click', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const { latitude, longitude } = position.coords;
+                        getWeatherByCoords(latitude, longitude);
+                    },
+                    error => {
+                        showError('Unable to get your location. Please enter a city manually.');
+                    }
+                );
+            } else {
+                showError('Geolocation is not supported by this browser.');
+            }
+        });
+
+        // Search on Enter key
+        locationInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const city = locationInput.value.trim();
+                if (city) {
+                    getWeatherByCity(city);
+                }
+            }
+        });
+
+        async function getWeatherByCity(city) {
+            try {
+                showLoading('currentWeather');
+                
+                // Current weather
+                const currentResponse = await fetch(
+                    `${BASE_URL}/weather?q=${city}&appid=${API_KEY}&units=metric`
+                );
+                
+                if (!currentResponse.ok) {
+                    throw new Error('City not found');
+                }
+                
+                const currentData = await currentResponse.json();
+                currentWeatherData = currentData;
+                
+                // Forecast data
+                const forecastResponse = await fetch(
+                    `${BASE_URL}/forecast?q=${city}&appid=${API_KEY}&units=metric`
+                );
+                const forecastData = await forecastResponse.json();
+                
+                displayCurrentWeather(currentData);
+                displayHourlyForecast(forecastData);
+                displayDailyForecast(forecastData);
+                
+            } catch (error) {
+                showError(`Error: ${error.message}`);
+            }
+        }
+
+        async function getWeatherByCoords(lat, lon) {
+            try {
+                showLoading('currentWeather');
+                
+                const currentResponse = await fetch(
+                    `${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
+                );
+                const currentData = await currentResponse.json();
+                currentWeatherData = currentData;
+                
+                const forecastResponse = await fetch(
+                    `${BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
+                );
+                const forecastData = await forecastResponse.json();
+                
+                displayCurrentWeather(currentData);
+                displayHourlyForecast(forecastData);
+                displayDailyForecast(forecastData);
+                
+                locationInput.value = `${currentData.name}, ${currentData.sys.country}`;
+                
+            } catch (error) {
+                showError(`Error: ${error.message}`);
+            }
+        }
+
+        function displayCurrentWeather(data) {
+            const weather = data.weather[0];
+            const iconUrl = `https://openweathermap.org/img/wn/${weather.icon}@4x.png`;
+            
+            const html = `
+                <div class="weather-card current-weather">
+                    <img src="${iconUrl}" alt="${weather.description}" class="weather-icon">
+                    <div class="temperature">${Math.round(data.main.temp)}°C</div>
+                    <div class="location">${data.name}, ${data.sys.country}</div>
+                    <div style="font-size: 1.2rem; margin-bottom: 1rem;">${weather.description.charAt(0).toUpperCase() + weather.description.slice(1)}</div>
+                    
+                    <div class="weather-details">
+                        <div class="detail-item">
+                            <div>Feels Like</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">${Math.round(data.main.feels_like)}°C</div>
+                        </div>
+                        <div class="detail-item">
+                            <div>Humidity</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">${data.main.humidity}%</div>
+                        </div>
+                        <div class="detail-item">
+                            <div>Wind Speed</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">${data.wind.speed} m/s</div>
+                        </div>
+                        <div class="detail-item">
+                            <div>Pressure</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">${data.main.pressure} hPa</div>
+                        </div>
+                        <div class="detail-item">
+                            <div>Visibility</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">${(data.visibility / 1000).toFixed(1)} km</div>
+                        </div>
+                        <div class="detail-item">
+                            <div>UV Index</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">-</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('currentWeather').innerHTML = html;
+        }
+
+        function displayHourlyForecast(data) {
+            const hourlyData = data.list.slice(0, 8); // Next 24 hours (8 * 3-hour periods)
+            
+            const html = hourlyData.map(item => {
+                const time = new Date(item.dt * 1000).toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    hour12: true 
+                });
+                const iconUrl = `https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`;
+                
+                return `
+                    <div class="forecast-item">
+                        <div style="font-weight: bold;">${time}</div>
+                        <img src="${iconUrl}" alt="${item.weather[0].description}" style="width: 60px; height: 60px;">
+                        <div style="font-size: 1.2rem; font-weight: bold;">${Math.round(item.main.temp)}°C</div>
+                        <div style="font-size: 0.9rem; color: var(--text-secondary);">${item.weather[0].description}</div>
+                        <div style="font-size: 0.8rem;">💧 ${item.pop * 100}%</div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('hourlyForecast').innerHTML = `<div class="forecast-grid">${html}</div>`;
+        }
+
+        function displayDailyForecast(data) {
+            // Group by days
+            const dailyData = {};
+            data.list.forEach(item => {
+                const date = new Date(item.dt * 1000).toDateString();
+                if (!dailyData[date]) {
+                    dailyData[date] = [];
+                }
+                dailyData[date].push(item);
+            });
+
+            const html = Object.entries(dailyData).slice(0, 7).map(([date, items]) => {
+                const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'short' });
+                const dayDate = new Date(date).getDate();
+                
+                const temps = items.map(item => item.main.temp);
+                const maxTemp = Math.round(Math.max(...temps));
+                const minTemp = Math.round(Math.min(...temps));
+                
+                const weather = items[0].weather[0];
+                const iconUrl = `https://openweathermap.org/img/wn/${weather.icon}@2x.png`;
+                
+                const rainChance = Math.max(...items.map(item => item.pop)) * 100;
+                
+                return `
+                    <div class="forecast-item">
+                        <div style="font-weight: bold;">${dayName}</div>
+                        <div style="font-size: 0.9rem; color: var(--text-secondary);">${dayDate}</div>
+                        <img src="${iconUrl}" alt="${weather.description}" style="width: 60px; height: 60px;">
+                        <div style="font-size: 1.1rem; font-weight: bold;">${maxTemp}°/${minTemp}°C</div>
+                        <div style="font-size: 0.9rem; color: var(--text-secondary);">${weather.description}</div>
+                        <div style="font-size: 0.8rem;">💧 ${Math.round(rainChance)}%</div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('dailyForecast').innerHTML = `<div class="forecast-grid">${html}</div>`;
+        }
+
+        // AI Travel Assistant
+        document.getElementById('getRecommendation').addEventListener('click', async () => {
+            const destination = document.getElementById('aiDestination').value.trim();
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (!destination || !startDate || !endDate) {
+                showAiError('Please fill in all fields for travel recommendation.');
+                return;
+            }
+            
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const today = new Date();
+            
+            if (start < today) {
+                showAiError('Start date cannot be in the past.');
+                return;
+            }
+            
+            if (end <= start) {
+                showAiError('End date must be after start date.');
+                return;
+            }
+            
+            const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            if (daysDiff > 5) {
+                showAiError('Travel period cannot exceed 5 days for accurate weather prediction.');
+                return;
+            }
+            
+            showAiLoading();
+            
+            try {
+                // Get weather forecast for the destination
+                const weatherResponse = await fetch(
+                    `${BASE_URL}/forecast?q=${destination}&appid=${API_KEY}&units=metric`
+                );
+                
+                if (!weatherResponse.ok) {
+                    throw new Error('Destination not found');
+                }
+                
+                const weatherData = await weatherResponse.json();
+                generateTravelRecommendation(weatherData, startDate, endDate, destination);
+                
+            } catch (error) {
+                showAiError(`Error getting weather data: ${error.message}`);
+            }
+        });
+
+        function generateTravelRecommendation(weatherData, startDate, endDate, destination) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            
+            // Filter weather data for travel dates
+            const travelWeatherData = weatherData.list.filter(item => {
+                const itemDate = new Date(item.dt * 1000);
+                return itemDate >= start && itemDate <= end;
+            });
+            
+            if (travelWeatherData.length === 0) {
+                showAiError('Weather data not available for selected dates.');
+                return;
+            }
+            
+            // Analyze weather conditions
+            const analysis = analyzeWeatherForTravel(travelWeatherData);
+            const recommendation = generateRecommendationText(analysis, destination, start, end);
+            const clothingRecommendations = getClothingRecommendations(analysis);
+            
+            displayAiRecommendation(recommendation, analysis, clothingRecommendations, travelWeatherData);
+        }
+
+        function analyzeWeatherForTravel(weatherData) {
+            const temps = weatherData.map(item => item.main.temp);
+            const conditions = weatherData.map(item => item.weather[0].main.toLowerCase());
+            const rainChances = weatherData.map(item => item.pop);
+            const humidity = weatherData.map(item => item.main.humidity);
+            const windSpeeds = weatherData.map(item => item.wind.speed);
+            
+            const avgTemp = temps.reduce((a, b) => a + b, 0) / temps.length;
+            const maxTemp = Math.max(...temps);
+            const minTemp = Math.min(...temps);
+            const maxRainChance = Math.max(...rainChances) * 100;
+            const avgHumidity = humidity.reduce((a, b) => a + b, 0) / humidity.length;
+            const avgWindSpeed = windSpeeds.reduce((a, b) => a + b, 0) / windSpeeds.length;
+            
+            const hasRain = conditions.some(cond => cond.includes('rain')) || maxRainChance > 30;
+            const hasSnow = conditions.some(cond => cond.includes('snow'));
+            const isCold = avgTemp < 15;
+            const isHot = avgTemp > 30;
+            const isHumid = avgHumidity > 70;
+            const isWindy = avgWindSpeed > 5;
+            
+            const weatherTypes = [...new Set(conditions)];
+            
+            return {
+                avgTemp: Math.round(avgTemp),
+                maxTemp: Math.round(maxTemp),
+                minTemp: Math.round(minTemp),
+                maxRainChance: Math.round(maxRainChance),
+                avgHumidity: Math.round(avgHumidity),
+                avgWindSpeed: Math.round(avgWindSpeed),
+                hasRain,
+                hasSnow,
+                isCold,
+                isHot,
+                isHumid,
+                isWindy,
+                weatherTypes,
+                conditions
+            };
+        }
+
+        function generateRecommendationText(analysis, destination, startDate, endDate) {
+            let recommendation = '';
+            let travelAdvice = '';
+            
+            // Overall recommendation
+            if (analysis.isCold && analysis.hasSnow) {
+                recommendation = '❄️ **Winter Travel Alert** - Pack warm and be prepared for cold weather!';
+                travelAdvice = 'Consider indoor activities and ensure proper winter clothing.';
+            } else if (analysis.isHot && analysis.avgHumidity > 60) {
+                recommendation = '🌡️ **Hot & Humid Conditions** - Stay hydrated and plan for heat!';
+                travelAdvice = 'Plan indoor activities during peak hours (12 PM - 4 PM) and carry plenty of water.';
+            } else if (analysis.hasRain && analysis.maxRainChance > 60) {
+                recommendation = '🌧️ **Rainy Weather Expected** - Pack rain gear and plan indoor alternatives!';
+                travelAdvice = 'Have backup indoor plans and waterproof your electronics.';
+            } else if (analysis.avgTemp >= 20 && analysis.avgTemp <= 28 && !analysis.hasRain) {
+                recommendation = '☀️ **Perfect Weather for Travel** - Ideal conditions expected!';
+                travelAdvice = 'Great time for outdoor activities and sightseeing.';
+            } else {
+                recommendation = '🌤️ **Moderate Weather Conditions** - Generally good for travel with minor preparations.';
+                travelAdvice = 'Pack layers and be prepared for changing conditions.';
+            }
+            
+            return {
+                overall: recommendation,
+                advice: travelAdvice,
+                shouldGo: !analysis.hasSnow && analysis.maxRainChance < 80 && analysis.avgTemp > 0
+            };
+        }
+
+        function getClothingRecommendations(analysis) {
+            const clothing = [];
+            
+            // Temperature-based recommendations
+            if (analysis.isCold) {
+                clothing.push({ item: '🧥 Winter Jacket', reason: 'Cold temperatures' });
+                clothing.push({ item: '🧣 Scarf & Gloves', reason: 'Extra warmth' });
+                clothing.push({ item: '🧦 Warm Socks', reason: 'Keep feet warm' });
+                clothing.push({ item: '👢 Winter Boots', reason: 'Insulation and grip' });
+            } else if (analysis.isHot) {
+                clothing.push({ item: '👕 Light Cotton Shirts', reason: 'Breathable in heat' });
+                clothing.push({ item: '🩳 Shorts', reason: 'Stay cool' });
+                clothing.push({ item: '👒 Sun Hat', reason: 'Sun protection' });
+                clothing.push({ item: '🕶️ Sunglasses', reason: 'UV protection' });
+            } else {
+                clothing.push({ item: '👔 Light Layers', reason: 'Temperature flexibility' });
+                clothing.push({ item: '👖 Comfortable Pants', reason: 'Versatile wear' });
+            }
+            
+            // Weather-based recommendations
+            if (analysis.hasRain) {
+                clothing.push({ item: '☂️ Umbrella', reason: 'Rain protection' });
+                clothing.push({ item: '🧥 Waterproof Jacket', reason: 'Stay dry' });
+                clothing.push({ item: '👢 Waterproof Shoes', reason: 'Wet conditions' });
+            }
+            
+            if (analysis.hasSnow) {
+                clothing.push({ item: '❄️ Snow Boots', reason: 'Snow and ice' });
+                clothing.push({ item: '🧤 Insulated Gloves', reason: 'Hand protection' });
+                clothing.push({ item: '🎿 Thermal Underwear', reason: 'Base layer warmth' });
+            }
+            
+            if (analysis.isWindy) {
+                clothing.push({ item: '🧥 Windbreaker', reason: 'Wind protection' });
+            }
+            
+            if (analysis.isHumid) {
+                clothing.push({ item: '👕 Moisture-wicking Clothes', reason: 'Combat humidity' });
+            }
+            
+            // Always recommend
+            clothing.push({ item: '👟 Comfortable Walking Shoes', reason: 'General travel' });
+            clothing.push({ item: '🎒 Light Backpack', reason: 'Carry essentials' });
+            
+            return clothing.slice(0, 8); // Limit to 8 recommendations
+        }
+
+        function displayAiRecommendation(recommendation, analysis, clothing, weatherData) {
+            const weatherSummary = weatherData.map(item => {
+                const date = new Date(item.dt * 1000).toLocaleDateString();
+                const time = new Date(item.dt * 1000).toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    hour12: true 
+                });
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <span>${date} ${time}</span>
+                        <span>${Math.round(item.main.temp)}°C - ${item.weather[0].description}</span>
+                        <span>💧 ${Math.round(item.pop * 100)}%</span>
+                    </div>
+                `;
+            }).join('');
+            
+            const clothingHtml = clothing.map(item => `
+                <div class="clothing-item">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">${item.item.split(' ')[0]}</div>
+                    <div style="font-size: 0.8rem; font-weight: bold;">${item.item.split(' ').slice(1).join(' ')}</div>
+                    <div style="font-size: 0.7rem; margin-top: 0.25rem; opacity: 0.8;">${item.reason}</div>
+                </div>
+            `).join('');
+            
+            const html = `
+                <div class="recommendation">
+                    <h3>${recommendation.overall}</h3>
+                    <p style="margin: 1rem 0;">${recommendation.advice}</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                        <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 1rem;">
+                            <div style="font-size: 0.9rem;">Avg Temperature</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">${analysis.avgTemp}°C</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 1rem;">
+                            <div style="font-size: 0.9rem;">Rain Chance</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">${analysis.maxRainChance}%</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 1rem;">
+                            <div style="font-size: 0.9rem;">Humidity</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">${analysis.avgHumidity}%</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 1rem;">
+                            <div style="font-size: 0.9rem;">Wind Speed</div>
+                            <div style="font-size: 1.5rem; font-weight: bold;">${analysis.avgWindSpeed} m/s</div>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin: 2rem 0 1rem 0;">🧳 Recommended Clothing & Accessories</h4>
+                    <div class="clothes-grid">${clothingHtml}</div>
+                    
+                    <h4 style="margin: 2rem 0 1rem 0;">📅 Weather Timeline</h4>
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 1rem; padding: 1rem; backdrop-filter: blur(10px);">
+                        ${weatherSummary}
+                    </div>
+                    
+                    <div style="margin-top: 2rem; padding: 1.5rem; background: ${recommendation.shouldGo ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'}; border-radius: 1rem; text-align: center;">
+                        <h4>${recommendation.shouldGo ? '✅ Recommended to Go!' : '⚠️ Consider Postponing'}</h4>
+                        <p style="margin-top: 0.5rem;">${recommendation.shouldGo ? 'Weather conditions are favorable for your trip.' : 'Weather conditions may not be ideal for travel.'}</p>
+                    </div>
+                </div>
+            `;
+            
+            const aiResponse = document.getElementById('aiResponse');
+            aiResponse.innerHTML = html;
+            aiResponse.style.display = 'block';
+        }
+
+        function showAiLoading() {
+            const aiResponse = document.getElementById('aiResponse');
+            aiResponse.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span style="margin-left: 1rem;">Analyzing weather data and generating recommendations...</span>
+                </div>
+            `;
+            aiResponse.style.display = 'block';
+        }
+
+        function showAiError(message) {
+            const aiResponse = document.getElementById('aiResponse');
+            aiResponse.innerHTML = `<div class="error">${message}</div>`;
+            aiResponse.style.display = 'block';
+        }
+
+        function showLoading(elementId) {
+            document.getElementById(elementId).innerHTML = `
+                <div class="loading">
+                    <div class="spinner" style="border-color: var(--primary-color); border-top-color: var(--accent-color);"></div>
+                    <span style="margin-left: 1rem; color: var(--text-primary);">Loading weather data...</span>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            document.getElementById('currentWeather').innerHTML = `
+                <div class="error">${message}</div>
+            `;
+        }
+
+        // Set default dates for AI assistant (today and tomorrow)
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        document.getElementById('startDate').value = today.toISOString().split('T')[0];
+        document.getElementById('endDate').value = tomorrow.toISOString().split('T')[0];
+
+        // Load initial weather for Mumbai
+        window.addEventListener('load', () => {
+            getWeatherByCity('Mumbai, IN');
+        });
+    </script>
+</body>
+</html>
