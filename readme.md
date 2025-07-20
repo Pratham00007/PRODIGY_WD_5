@@ -2,6 +2,26 @@
 
 > **Smart weather forecasting with AI-driven travel recommendations and clothing suggestions**
 
+<img width="1919" height="959" alt="WE1" src="https://github.com/user-attachments/assets/5dd202ac-3421-4205-89d8-cf837fbdae96" />
+
+
+<img width="1919" height="966" alt="WE2" src="https://github.com/user-attachments/assets/83309ca6-177b-484e-a557-7202fbdfe229" />
+
+
+<img width="1919" height="836" alt="WE3" src="https://github.com/user-attachments/assets/c166d2f4-e444-46f8-815a-f918c3895801" />
+
+
+<img width="1279" height="894" alt="WE5" src="https://github.com/user-attachments/assets/38b27bbf-6e07-4d1a-a145-ec232133e1a5" />
+
+
+<img width="1919" height="785" alt="WE4" src="https://github.com/user-attachments/assets/bcaeb7ad-9ceb-40f4-a58e-37dae7c96edc" />
+
+<BR>
+<BR>
+<H3> VIDEO</H3>
+
+https://github.com/user-attachments/assets/f1db75a0-722c-400a-b927-65d902d34d8d
+
 
 
 ## 🚀 What Makes WeatherWise Unique?
